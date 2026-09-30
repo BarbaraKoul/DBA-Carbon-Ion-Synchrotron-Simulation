@@ -1,3 +1,5 @@
+import numpy as np
+
 #Particle constants
 AMU_EV= 931.49410242e6
 E_MASS_EV= 0.51099895e6
@@ -8,6 +10,7 @@ ION_MASS_EV=ION_A*AMU_EV-ION_Z*E_MASS_EV
 #Energy constants
 E_KIN_INJECTION_MEV_U = 4.0
 E_KIN_EXTRACTION_MEV_U = 430.0
+P0C=np.sqrt((E_KIN_EXTRACTION_MEV_U*ION_A+ION_MASS_EV)**2-ION_MASS_EV**2)
 
 #Lattice geometry constants
 CIRCUMFERENCE_M=55
