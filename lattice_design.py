@@ -24,3 +24,25 @@ env.new('qd2', 'mq', k1=cfg.K1_QD2)
 
 tt_elem = env.elements.get_table()
 print(tt_elem)
+
+dba=env.new_line(length=27.5, components=[
+    env.place('qf1', anchor='start', at=2.82),
+    env.place('qd1', anchor='start', at=0.4, from_='qf1@end'),
+    env.place('mb', anchor='start', at=0.2, from_='qd1@end'),
+    env.place('mb', anchor='start', at=0.2, from_='mb@end'),
+    env.place('qd2', anchor='start', at=1.0, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.4, from_='qd2@end'),
+    env.place('qf2', anchor='start', at=0.4, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.4, from_='qf2@end'),
+    env.place('qd2', anchor='start', at=0.4, from_='mb@end'),
+    env.place('mb', anchor='start', at=1.0, from_='qd2@end'),
+    env.place('mb', anchor='start', at=0.2, from_='mb@end'),
+    env.place('qd1', anchor='start', at=0.2, from_='mb@end'),
+    env.place('qf1', anchor='start', at=0.4, from_='qd1@end')
+])
+
+DBA=dba.survey()
+DBA.plot(figsize=(12, 6))
+fig1 = plt.gcf()
+plt.title('Survey floor plot')
+plt.show()
