@@ -46,3 +46,8 @@ DBA.plot(figsize=(12, 6))
 fig1 = plt.gcf()
 plt.title('Survey floor plot')
 plt.show()
+
+ring=2*dba
+sv=ring.survey()
+sv.plot(figsize=(12, 6))
+plt.show()
