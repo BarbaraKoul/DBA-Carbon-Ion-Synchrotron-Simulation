@@ -26,28 +26,25 @@ tt_elem = env.elements.get_table()
 print(tt_elem)
 
 dba=env.new_line(length=27.5, components=[
-    env.place('qf1', anchor='start', at=2.82),
-    env.place('qd1', anchor='start', at=0.4, from_='qf1@end'),
-    env.place('mb', anchor='start', at=0.2, from_='qd1@end'),
-    env.place('mb', anchor='start', at=0.2, from_='mb@end'),
-    env.place('qd2', anchor='start', at=1.0, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.4, from_='qd2@end'),
-    env.place('qf2', anchor='start', at=0.4, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.4, from_='qf2@end'),
-    env.place('qd2', anchor='start', at=0.4, from_='mb@end'),
-    env.place('mb', anchor='start', at=1.0, from_='qd2@end'),
-    env.place('mb', anchor='start', at=0.2, from_='mb@end'),
-    env.place('qd1', anchor='start', at=0.2, from_='mb@end'),
-    env.place('qf1', anchor='start', at=0.4, from_='qd1@end')
+    env.place('qf1', anchor='start', at=2.62),
+    env.place('qd1', anchor='start', at=0.238, from_='qf1@end'),
+    env.place('mb', anchor='start', at=0.511, from_='qd1@end'),
+    env.place('mb', anchor='start', at=0.417, from_='mb@end'),
+    env.place('qd2', anchor='start', at=0.623, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.809, from_='qd2@end'),
+    env.place('qf2', anchor='start', at=0.2, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.2, from_='qf2@end'),
+    env.place('qd2', anchor='start', at=0.809, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.623, from_='qd2@end'),
+    env.place('mb', anchor='start', at=0.417, from_='mb@end'),
+    env.place('qd1', anchor='start', at=0.511, from_='mb@end'),
+    env.place('qf1', anchor='start', at=0.238, from_='qd1@end')
 ])
-
-DBA=dba.survey()
-DBA.plot(figsize=(12, 6))
-fig1 = plt.gcf()
-plt.title('Survey floor plot')
-plt.show()
 
 ring=2*dba
 sv=ring.survey()
 sv.plot(figsize=(12, 6))
+plt.show()
+
+ring.twiss4d().plot()
 plt.show()
