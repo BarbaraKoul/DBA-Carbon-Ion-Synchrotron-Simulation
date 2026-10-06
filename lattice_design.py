@@ -25,20 +25,20 @@ env.new('qd2', 'mq', k1=cfg.K1_QD2)
 tt_elem = env.elements.get_table()
 print(tt_elem)
 
-dba=env.new_line(length=27.5, components=[
-    env.place('qf1', anchor='start', at=2.62),
-    env.place('qd1', anchor='start', at=0.238, from_='qf1@end'),
-    env.place('mb', anchor='start', at=0.511, from_='qd1@end'),
-    env.place('mb', anchor='start', at=0.417, from_='mb@end'),
-    env.place('qd2', anchor='start', at=0.623, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.809, from_='qd2@end'),
-    env.place('qf2', anchor='start', at=0.2, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.2, from_='qf2@end'),
-    env.place('qd2', anchor='start', at=0.809, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.623, from_='qd2@end'),
-    env.place('mb', anchor='start', at=0.417, from_='mb@end'),
-    env.place('qd1', anchor='start', at=0.511, from_='mb@end'),
-    env.place('qf1', anchor='start', at=0.238, from_='qd1@end')
+dba=env.new_line(length=27.501, components=[
+    env.place('qf1', anchor='start', at=3.223),
+    env.place('qd1', anchor='start', at=0.427, from_='qf1@end'),
+    env.place('mb', anchor='start', at=1.051, from_='qd1@end'),
+    env.place('mb', anchor='start', at=0.686, from_='mb@end'),
+    env.place('qd2', anchor='start', at=0.555, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.639, from_='qd2@end'),
+    env.place('qf2', anchor='start', at=0.451, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.451, from_='qf2@end'),
+    env.place('qd2', anchor='start', at=0.639, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.555, from_='qd2@end'),
+    env.place('mb', anchor='start', at=0.686, from_='mb@end'),
+    env.place('qd1', anchor='start', at=1.051, from_='mb@end'),
+    env.place('qf1', anchor='start', at=0.427, from_='qd1@end'),
 ])
 
 ring=2*dba
@@ -46,5 +46,14 @@ sv=ring.survey()
 sv.plot(figsize=(12, 6))
 plt.show()
 
-ring.twiss4d().plot()
+tw=ring.twiss4d()
+tw.plot()
+print(tw.betx.max())
 plt.show()
+
+print(tw.bety.max())
+print(tw.dx.max())
+print(tw.dpx.max())
+print(tw.betx.max())
+print(tw.qx)
+print(tw.qy)
