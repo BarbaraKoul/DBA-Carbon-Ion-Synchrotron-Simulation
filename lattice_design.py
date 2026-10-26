@@ -29,40 +29,44 @@ tt_elem = env.elements.get_table()
 print(tt_elem)
 
 dba=env.new_line(length=27.501, components=[
-    env.place('qf1', anchor='start', at=3.223),
-    env.place('qd1', anchor='start', at=0.427, from_='qf1@end'),
-    env.place('mb', anchor='start', at=1.051, from_='qd1@end'),
-    env.place('mb', anchor='start', at=0.686, from_='mb@end'),
-    env.place('qd2', anchor='start', at=0.555, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.639, from_='qd2@end'),
-    env.place('qf2', anchor='start', at=0.451, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.451, from_='qf2@end'),
-    env.place('qd2', anchor='start', at=0.639, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.555, from_='qd2@end'),
-    env.place('mb', anchor='start', at=0.686, from_='mb@end'),
-    env.place('qd1', anchor='start', at=1.051, from_='mb@end'),
-    env.place('qf1', anchor='start', at=0.427, from_='qd1@end'),
+    env.place('qf1', anchor='start', at=1.98296),
+    env.place('qd1', anchor='start', at=0.403088, from_='qf1@end'),
+    env.place('mb', anchor='start', at=0.399686, from_='qd1@end'),
+    env.place('mb', anchor='start', at=0.339825, from_='mb@end'),
+    env.place('qd2', anchor='start', at=1.48352, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.422807, from_='qd2@end'),
+    env.place('qf2', anchor='start', at=0.390371, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.390371, from_='qf2@end'),
+    env.place('qd2', anchor='start', at=0.422807, from_='mb@end'),
+    env.place('mb', anchor='start', at=1.48352, from_='qd2@end'),
+    env.place('mb', anchor='start', at=0.339825, from_='mb@end'),
+    env.place('qd1', anchor='start', at=0.399686, from_='mb@end'),
+    env.place('qf1', anchor='start', at=0.403088, from_='qd1@end'),
 ])
 
 ring=2*dba
 
 ring.insert([
-    env.place('sxr1', anchor='start', at=-13.729, from_='qf2@end')
+    env.place('sxr1', anchor='start', at=-14.729, from_='qf2@end')
 ])
-
+plt.close('all')
 sv=ring.survey()
-sv.plot(figsize=(12, 6))
-plt.show(block=False)
+sv.plot()
 
 tw=ring.twiss4d()
 tw.plot()
+
+chrom_x=tw.dqx
+chrom_y=tw.dqy
+print("Horizontal chromaticity:", chrom_x)
+print("Vertical chromaticity:", chrom_y)
 print("betx max: ", tw.betx.max())
 
 print("bety max: ", tw.bety.max())
-print(tw.dx.max())
-print(tw.dpx.max())
-print(tw.qx)
-print(tw.qy)
+print("dx max: ", tw.dx.max())
+print("dpx max: ", tw.dpx.max())
+print("qx: ", tw.qx)
+print("qy: ", tw.qy)
 
 #tt = ring.get_table()
 #tt.show(cols=['s_start', 's_center', 's_end'])

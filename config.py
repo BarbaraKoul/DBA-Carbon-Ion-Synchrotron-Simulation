@@ -1,38 +1,39 @@
 import numpy as np
 
-#Particle constants
-AMU_EV= 931.49410242e6
-E_MASS_EV= 0.51099895e6
-ION_A=12
-ION_Z=6
-ION_MASS_EV=ION_A*AMU_EV-ION_Z*E_MASS_EV
+# Particle constants
+AMU_EV = 931.49410242e6
+E_MASS_EV = 0.51099895e6
+ION_A = 12
+ION_Z = 6
+ION_MASS_EV = ION_A * AMU_EV - ION_Z * E_MASS_EV
 
-#Energy constants
+# Energy constants
 E_KIN_INJECTION_MEV_U = 4.0
 E_KIN_EXTRACTION_MEV_U = 430.0
-P0C=np.sqrt((E_KIN_EXTRACTION_MEV_U*ION_A+ION_MASS_EV)**2-ION_MASS_EV**2)
+# FIX: units (MeV/u -> eV total)
+E_KIN_EXTRACTION_EV = E_KIN_EXTRACTION_MEV_U * 1e6 * ION_A
+P0C = np.sqrt((E_KIN_EXTRACTION_EV + ION_MASS_EV) ** 2 - ION_MASS_EV ** 2)
 
-#Lattice geometry constants
-CIRCUMFERENCE_M=55
-N_DIPOLES=12
-N_QUADS=14
-N_CELLS=2 #2cells of 180 degrees each
+# Lattice geometry constants
+CIRCUMFERENCE_M = 55
+N_DIPOLES = 12
+N_QUADS = 14
+N_CELLS = 2  # 2 cells of 180 degrees each
 L_DIPOLE_M = 2.31
 TOTAL_BEND_LENGTH_M = N_DIPOLES * L_DIPOLE_M
-BEND_ANGLE_PER_DIPOLE_DEG = 360.0 / N_DIPOLES #30 degs
-DIPOLE_FIELD_T = 1.5 #max strength
+BEND_ANGLE_PER_DIPOLE_DEG = 360.0 / N_DIPOLES  # 30 degs
+DIPOLE_FIELD_T = 1.5  # max strength
 L_QUAD_M = 0.4
 L_SEXTUPOLE_M = 0.297
 
-
-#Quad strengths
+# Quad strengths
 K1_QF1 = 1.049
 K1_QF2 = 0.800
 K1_QD1 = -1.299
 K1_QD2 = -0.650
 K2_SXR1 = -1.158
 
-#Optics constants
+# Optics constants
 QX_TARGET = 1.672
 QY_TARGET = 1.72
 TRANSITION_GAMMA = 1.742
@@ -43,12 +44,12 @@ DISPERSION_X_MAX_M = 13.109
 CHROMATICITY_X_NATURAL = -1.093
 CHROMATICITY_Y_NATURAL = -1.276
 
-#Hardt condition ES
+# Hardt condition ES
 ES_DISPERSION_DN = 2.60
 ES_DISPERSION_DN_PRIME = -2.44
 DMU_SXR_TO_ES_DEG = 226.0
 DMU_ES_TO_MS_DEG = 70.5
 
-#ES check
+# ES check
 ES_FIELD_KV_CM = 61.1
 ES_DEFLECTION_MM = 0.6
