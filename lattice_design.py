@@ -28,7 +28,7 @@ env.new('sxr1', 'ms', k2=cfg.K2_SXR1)
 tt_elem = env.elements.get_table()
 print(tt_elem)
 
-dba=env.new_line(length=27.501, components=[
+dba=env.new_line(length=27.72, components=[
     env.place('qf1', anchor='start', at=3.223),
     env.place('qd1', anchor='start', at=0.427, from_='qf1@end'),
     env.place('mb', anchor='start', at=1.051, from_='qd1@end'),
@@ -47,12 +47,11 @@ dba=env.new_line(length=27.501, components=[
 ring=2*dba
 
 ring.insert([
-    env.place('sxr1', anchor='start', at=-13.729, from_='qf2@end')
+    env.place('sxr1', anchor='start', at=-13.129, from_='qf2@end')
 ])
 
 sv=ring.survey()
 sv.plot(figsize=(12, 6))
-plt.show(block=False)
 
 tw=ring.twiss4d()
 tw.plot()
