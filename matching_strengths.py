@@ -14,20 +14,20 @@ def frac(k, f=0.4):
 ion = xt.Particles(_context=ctx, mass0=cfg.ION_MASS_EV, q0=cfg.ION_Z, p0c=cfg.P0C)
 env.set_particle_ref(ion)
 
-env.vars['kqf1']= 1.0
-env.vars['kqf2']= 1.0
-env.vars['kqd1']= -1.2
-env.vars['kqd2']= -0.6
+env.vars['kqf1']= 1.1
+env.vars['kqf2']= 0.8
+env.vars['kqd1']= -1.4
+env.vars['kqd2']= -0.5
 
 #magnets
 env.new('mb', xt.Bend, length=cfg.L_DIPOLE_M, angle=np.deg2rad(cfg.BEND_ANGLE_PER_DIPOLE_DEG),k0_from_h=True)
 env.new('mq', xt.Quadrupole, length=cfg.L_QUAD_M)
 
 #quadruple strengths
-env.new('qf1', 'mq', k1=cfg.K1_QF1)
-env.new('qf2', 'mq', k1=cfg.K1_QF2)
-env.new('qd1', 'mq', k1=cfg.K1_QD1)
-env.new('qd2', 'mq', k1=cfg.K1_QD2)
+env.new('qf1', 'mq', k1='kqf1')
+env.new('qf2', 'mq', k1='kqf2')
+env.new('qd1', 'mq', k1='kqd1')
+env.new('qd2', 'mq', k1='kqd2')
 
 dba=env.new_line(length=27.501, components=[
     env.place('qf1', anchor='start', at=1.98296),
@@ -54,11 +54,13 @@ opt = ring.match(chrom=False,
           xt.Vary('kqd1', step=1e-5, limits=frac(cfg.K1_QD1)),
           xt.Vary('kqd2', step=1e-5, limits=frac(cfg.K1_QD2))], 
     targets=[
-        xt.Target('qx', cfg.QX_TARGET, tol=1e-2),
-        xt.Target('qy', cfg.QY_TARGET, tol=1e-2),
+        xt.Target('qx', cfg.QX_TARGET, tol=2e-3),
+        xt.Target('qy', cfg.QY_TARGET, tol=2e-3),
         xt.Target('dx', 0.0, at=xt.START, tol=1e-3),
-        xt.Target(lambda tw: tw.betx.max(), cfg.BETA_X_MAX_M, tol=1e-3),])
+        xt.Target(lambda tw: tw.betx.max(), cfg.BETA_X_MAX_M, tol=2e-3),])
 
 opt.show()
 opt.target_status()
 print(env.vars.get_table())
+tw = ring.twiss(method='4d', chrom=False)
+print('bety_max', tw.bety.max(), '(11.839)')
