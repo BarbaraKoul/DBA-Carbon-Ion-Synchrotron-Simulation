@@ -67,6 +67,7 @@ print("dx max: ", tw.dx.max())
 print("dpx max: ", tw.dpx.max())
 print("qx: ", tw.qx)
 print("qy: ", tw.qy)
+print(tw.dx[0])
 
 #tt = ring.get_table()
 #tt.show(cols=['s_start', 's_center', 's_end'])
