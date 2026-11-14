@@ -1,4 +1,5 @@
 import xtrack as xt
+import xpart as xp
 import xobjects as xo
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,26 +26,26 @@ env.new('qd2', 'mq', k1=cfg.K1_QD2)
 env.new('sxr1', 'ms', k2=cfg.K2_SXR1)
 
 #rf cavity
-env.new('rf1', xt.Cavity, length=cfg.L_CAVITY_RF, voltage=cfg.RF_VOLT, frequency=cfg.RF_FREQ)
+env.new('rf1', xt.Cavity, length=cfg.L_CAVITY_RF, voltage=cfg.RF_VOLT, harmonic=cfg.RF_HARM)
 
 
 tt_elem = env.elements.get_table()
 print(tt_elem)
 
-dba=env.new_line(length=27.72, components=[
-    env.place('qf1', anchor='start', at=3.223),
-    env.place('qd1', anchor='start', at=0.427, from_='qf1@end'),
-    env.place('mb', anchor='start', at=1.051, from_='qd1@end'),
-    env.place('mb', anchor='start', at=0.686, from_='mb@end'),
-    env.place('qd2', anchor='start', at=0.555, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.639, from_='qd2@end'),
-    env.place('qf2', anchor='start', at=0.451, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.451, from_='qf2@end'),
-    env.place('qd2', anchor='start', at=0.639, from_='mb@end'),
-    env.place('mb', anchor='start', at=0.555, from_='qd2@end'),
-    env.place('mb', anchor='start', at=0.686, from_='mb@end'),
-    env.place('qd1', anchor='start', at=1.051, from_='mb@end'),
-    env.place('qf1', anchor='start', at=0.427, from_='qd1@end'),
+dba=env.new_line(length=27.501, components=[
+    env.place('qf1', anchor='start', at=1.98296),
+    env.place('qd1', anchor='start', at=0.403088, from_='qf1@end'),
+    env.place('mb', anchor='start', at=0.399686, from_='qd1@end'),
+    env.place('mb', anchor='start', at=0.339825, from_='mb@end'),
+    env.place('qd2', anchor='start', at=1.48352, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.422807, from_='qd2@end'),
+    env.place('qf2', anchor='start', at=0.390371, from_='mb@end'),
+    env.place('mb', anchor='start', at=0.390371, from_='qf2@end'),
+    env.place('qd2', anchor='start', at=0.422807, from_='mb@end'),
+    env.place('mb', anchor='start', at=1.48352, from_='qd2@end'),
+    env.place('mb', anchor='start', at=0.339825, from_='mb@end'),
+    env.place('qd1', anchor='start', at=0.399686, from_='mb@end'),
+    env.place('qf1', anchor='start', at=0.403088, from_='qd1@end'),
 ])
 
 ring=2*dba
@@ -54,24 +55,83 @@ ring.insert([
     env.place('rf1', anchor='start', at=-15.003, from_='qf2@end'),
 ])
 
-sv=ring.survey()
-sv.plot(figsize=(12, 6))
+plt.close('all')
+sv = ring.survey()
+sv.plot()
 
-
-tw=ring.twiss6d()
+tw = ring.twiss6d()
 tw.plot()
+
+chrom_x=tw.dqx
+chrom_y=tw.dqy
+
+print("Horizontal chromaticity:", chrom_x)
+print("Vertical chromaticity:", chrom_y)
 print("betx max: ", tw.betx.max())
+
 print("bety max: ", tw.bety.max())
-
-print(tw.dx.max())
-print(tw.dpx.max())
-print(tw.qx)
-print(tw.qy)
-print(tw.qs)
-
+print("dx max: ", tw.dx.max())
+print("dpx max: ", tw.dpx.max())
+print("qx: ", tw.qx)
+print("qy: ", tw.qy)
+print("tune: ",tw.qs)
 
 #tt = ring.get_table()
 #tt.show(cols=['s_start', 's_center', 's_end'])
 
 plt.show()
 
+monitor = xt.BeamStatsMonitor(
+    start_at_turn=0,
+    stop_at_turn=300,
+    stats=["num_particles", "sigma_zeta", "mean_zeta", "betx", "bety", "dx", "dy"],
+)
+
+ring.insert("beam_monitor", monitor, at=0)
+
+np.random.seed(42)
+ion = ring.xpart.generate_matched_gaussian_bunch(
+    num_particles=100,
+    total_intensity_particles=3,
+    nemitt_x=11e-5,
+    nemitt_y=29e-5,
+    sigma_z=1e-3,
+)
+
+ring.track(ion, num_turns=300,
+           with_progress=1
+)
+
+#monitor.stats  
+#monitor.available_levels 
+#monitor.default_level  
+#monitor.turns  
+#monitor.mean_x.shape
+#monitor.num_particles.shape
+
+plt.close('all')
+fig, axes = plt.subplots(2, 1, sharex=True)
+axes[0].plot(monitor.turns, monitor.sigma_zeta * 1000)
+axes[0].set_ylabel("beam size zeta [mm]")
+axes[1].plot(monitor.turns, monitor.mean_zeta * 1000)
+axes[1].set_ylabel("mean_zeta [mm]")
+axes[1].set_xlabel("turn")
+plt.show()
+
+plt.close('all')
+fig, axes = plt.subplots(2, 1, sharex=True)
+axes[0].plot(monitor.turns, monitor.betx)
+axes[0].set_ylabel("betx [m]")
+axes[1].plot(monitor.turns, monitor.bety * 10)
+axes[1].set_ylabel("bety [m]")
+axes[1].set_xlabel("turn")
+plt.show()
+
+plt.close('all')
+fig, axes = plt.subplots(2, 1, sharex=True)
+axes[0].plot(monitor.turns, monitor.dx)
+axes[0].set_ylabel("dispersionX")
+axes[1].plot(monitor.turns, monitor.dy)
+axes[1].set_ylabel("dispersionY")
+axes[1].set_xlabel("turn")
+plt.show()
