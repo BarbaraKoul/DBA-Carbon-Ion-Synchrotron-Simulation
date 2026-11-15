@@ -49,6 +49,23 @@ The ``matching_strengths.py`` is created for optimisation of the Twiss parameter
 - Our targets in this case are: Q<sub>x</sub>, Q<sub>y</sub>, &beta;<sub>x</sub> and D<sub>x</sub>=0 at the straight sections of the accelerator.
 
 ## Simulated Annealing Algorithm for Quadrupole Strength Optimisation
+As stated in the [Cornell University Wiki:](https://optimization.cbe.cornell.edu/index.php?title=Simulated_annealing)</br>
+*SA is a probabilistic technique for finding approximate solutions to optimization problems, particularly those with large search spaces. Inspired by the annealing process in metallurgy, the algorithm explores the solution space by occasionally accepting worse solutions with a probability that diminishes over time. This reduces the risk of getting stuck in local optima and increases the likelihood of discovering the global optimum.*</br>
 
+A pseudocode for this algorithm is the following:</br>
 
-# RF Cavities
+```
+1: T = T0
+2: Ts = T1
+3: δ = δ0
+4: x = x0
+5: while T > Ts do
+6:  x1 = RandSelect(neighbourhood(x))
+7:  ∆F = Fitness(x) − Fitness(x1)
+8:  if ∆F > 0 then
+9:    x ← x1
+10: else if random(0,1) < exp(−∆F/T) then
+11:   x ← x1
+12: T = T − δ
+```
+## RF Cavities
