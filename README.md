@@ -37,6 +37,9 @@ The ``lattice_design.py`` is created for:
 - The calculation of the tunes Q<sub>x</sub>, Q<sub>y</sub>.
 
 The ``lattice_design_RF.py`` is created for:
+-The addition of an RF Cavity to the previously defined environment of the simple lattice.
+-The calculation of the tune longitudinal to the particle, Q<sub>s</sub>.
+-The plotting over time of RMS Beam Size on the Z axis and the Twiss parameters.
 
 ## Matching
 For matching, we have again 2 files: ``matching.py`` and ``matching_strengths.py``.
@@ -69,3 +72,25 @@ A pseudocode for this algorithm is the following:</br>
 12: T = T − δ
 ```
 ## RF Cavities
+In order to avoid interfering with the 4D Twiss methods, two new files were created for the RF Cavity simulation (or 6D Twiss method). ``lattice_design_RF.py`` and ``configRF.py``. </br>
+In ``configRF.py``: </br>
+* We define the the RF Voltage as 55kV </br>
+* The RF frequency from a calculation that was made on hand, possibly on a wrong assumption. </br> 
+* and the RF harmonic as 32, which is a way to calculate the required frequency through Xsuite </br>
+We also defined the RF Cavity length and the rest is left as is from ``config.py`` </br>
+
+In ``lattice_design_RF.py`` the largest change being made is of course the Twiss 6D method. The ring is mostly similar, except for the fact that we slice it to 
+insert 'rf1' or the RF cavity in the lattice 1.874 meters left from the sextupole. The tune is no longer 0 so we print it in this mode. 6D method allows us to see
+how many of the values we considered stable before, change with time. BeamStatMonitor allows us to do that. We define an infinitesimal element of the lattice that
+allows us to take measurements every time a particle (or rather some bunched particles) pass through that element, which we will place at 0. </br>
+
+We first however have to define the injection energy, normalized emittance on x and y as well as rms beam size on z axis and finally the number of particles. 
+Xsuite runs out of memory fast with the number of particles however. 10^5 particles would need 74.5GB of RAM to run, we therefore keep our particle numbers low,
+around the low hundreds to not run into any problems. The injection energy can be defined by the max penetration depth together with the realistic capabilities
+of an RF cavity on a 55 meter synchrotron. Normalized emittance both on x and y and rms beam size on z can be defined AFTER evaluating the results, in other words
+it is a better approach to use the results to define the starting values than the other way around. After all emittance on injection is defined by the injection
+linac which we do not have data on (same with rms beam size). </br>
+
+We then plot over every turn:</br>
+the rms beam size on z axis, the deviation of the beam from zeta, the betatron x function, the betatron y function, the dispersion on X axis and the dispersion on 
+Y axis respectively. </br> 
