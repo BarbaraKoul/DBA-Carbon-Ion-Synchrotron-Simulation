@@ -4,6 +4,7 @@ import numpy as np
 import config as cfg
 import math
 import random
+import matplotlib.pyplot as plt
 from lattice_design import ring
 
 J_UNSTABLE = 1e6
@@ -83,6 +84,10 @@ def anneal(ev, u0, rng, T0=0.3, T_end=0.002, sigma0=0.2, sigma_min=1e-3, sigma_m
     u = np.array(u0, float)
     E = np.log(ev(u))
     adapt, n_prop, n_acc = 1.0, 0, 0
+
+    #Dictionary for acceptance rate and sigma adaptation
+    d={'iterations':[], 'acceptance_rate':[], 'sigma':[]}
+
     try:
         while True:
             f = min(ev.n / ev.budget, 1.0)
@@ -96,11 +101,16 @@ def anneal(ev, u0, rng, T0=0.3, T_end=0.002, sigma0=0.2, sigma_min=1e-3, sigma_m
                 n_acc += 1
             if n_prop == adapt_every:
                 rate = n_acc / n_prop
+
+                d['iterations'].append(ev.n)
+                d['acceptance_rate'].append(rate)
+                d['sigma'].append(sigma)
+
                 adapt = adapt * 1.3 if rate > target_acc[1] else (adapt / 1.3 if rate < target_acc[0] else adapt)
                 n_prop = n_acc = 0
     except StopIteration:
         pass
-    return ev.best_u, ev.best_J
+    return ev.best_u, ev.best_J, d
 
 if __name__ == '__main__':
 
@@ -140,11 +150,21 @@ if __name__ == '__main__':
     best_overall_J = np.inf
     best_overall_parts = None
 
+    #diagnostics array
+    all_d = []
+    #Plot of Single Cost Function over Iterations
+    plt.figure(figsize=(10, 6))
+
     for seed in range(4):
         rng = np.random.default_rng(seed)
         ev = ScalarEvaluator(cost, set_vars, get_metrics, lo=lo, hi=hi, budget=800)
         u0 = rng.random(4)
-        u_opt, J_opt = anneal(ev, u0, rng)
+        u_opt, J_opt, d = anneal(ev, u0, rng)
+        all_d.append(d)
+
+        #Plotting the cost function over iterations for each seed
+        plt.plot(range(len(ev.history)), ev.history, label=f'Seed {seed}')
+
         x_opt = ev.lo + u_opt * (ev.hi - ev.lo)
         print(f"Seed {seed}: J = {J_opt:.4f} | k1 = {np.round(x_opt, 4)}")
 
@@ -153,9 +173,57 @@ if __name__ == '__main__':
             best_overall_x = x_opt
             best_overall_parts = ev.best_parts
 
+    plt.yscale('log')
+    plt.xlabel("Iterations")
+    plt.ylabel("Cost J")
+    plt.title("Cost Function vs Iterations for Different Seeds")
+    plt.grid(True)
+    plt.legend([f'Seed {i}' for i in range(4)])
+    plt.show()
+    
     # Optimum solution
     set_vars(best_overall_x)
     print("\nOptimum solution:")
     print("k1 [m^-2]:", np.round(best_overall_x, 5))
     print("Cost J   :", round(best_overall_J, 5))
     print("Analysis :", best_overall_parts)
+
+    #Temperature/Iterations plot
+
+    T0=0.3
+    T_end=0.002
+    budget=800
+    iterations = np.arange(1, budget)
+    Temps= T0 * (T_end / T0) ** (iterations / budget)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(iterations, Temps)
+    plt.title("Temperature vs Iterations")
+    plt.xlabel("Iterations")
+    plt.ylabel("Temperature")
+    plt.grid(True)
+    plt.show()
+
+    #Acceptance Rate and Sigma Adaptation plot
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 6), sharex=True)
+
+    #Subplot: Acceptance Rate
+    ax1.axhspan(0.2, 0.5, color='green', label='Target zone (0.2 - 0.5)')
+    for seed, d in enumerate(all_d):
+        ax1.plot(d['iterations'], d['acceptance_rate'], marker='o', markersize=3, alpha=0.8, label=f'Seed {seed}')
+    ax1.set_ylabel('Acceptance Rate')
+    ax1.set_ylim(-0.05, 1.05)
+    ax1.set_title('Adaptive Simulated Annealing Diagnostics')
+    ax1.legend(loc='upper right', ncol=2)
+    ax1.grid(True)
+
+    #Subplot: Sigma Adaptation
+    for seed, d in enumerate(all_d):
+        ax2.plot(d['iterations'], d['sigma'], marker='o', markersize=3, label=f'Seed {seed}')
+    ax2.set_yscale('log')
+    ax2.set_xlabel('Iterations')
+    ax2.set_ylabel(r'Step Size $\sigma$')
+    ax2.grid(True, which='both')
+
+    plt.tight_layout()
+    plt.show()
