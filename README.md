@@ -37,9 +37,9 @@ The ``lattice_design.py`` is created for:
 - The calculation of the tunes Q<sub>x</sub>, Q<sub>y</sub>.
 
 The ``lattice_design_RF.py`` is created for:
--The addition of an RF Cavity to the previously defined environment of the simple lattice.
--The calculation of the tune longitudinal to the particle, Q<sub>s</sub>.
--The plotting over time of RMS Beam Size on the Z axis and the Twiss parameters.
+- The addition of an RF Cavity to the previously defined environment of the simple lattice.
+- The calculation of the tune longitudinal to the particle, Q<sub>s</sub>.
+- The plotting over time of RMS Beam Size on the Z axis and the Twiss parameters.
 
 ## Matching
 For matching, we have again 2 files: ``matching.py`` and ``matching_strengths.py``.
