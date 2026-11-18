@@ -11,12 +11,13 @@ from pymoo.core.problem import ElementwiseProblem
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.optimize import minimize
 from pymoo.termination import get_termination
+from pymoo.visualization.scatter import Scatter
 
 #For tunes Qx, Qy
 from SAA_optimisation import third_int
 
 class LatticeOptimisationProblem(ElementwiseProblem):
-    def __init__(self, set_vars, get_metrics, lo, hi, ref, tol_qx=1e-3, tol_qy=1e-3):
+    def __init__(self, set_vars, get_metrics, lo, hi, ref, tol_qx=0.01, tol_qy=0.01):
         super().__init__(n_var=4, n_obj=4, n_constr=2, xl=lo, xu=hi)
         self.set_vars = set_vars
         self.get_metrics = get_metrics
@@ -26,7 +27,6 @@ class LatticeOptimisationProblem(ElementwiseProblem):
 
     def _evaluate(self, x, out, *args, **kwargs):
         self.set_vars(x)
-        metrics = self.get_metrics()
         try:
             m=self.get_metrics()
         except Exception:
@@ -39,7 +39,7 @@ class LatticeOptimisationProblem(ElementwiseProblem):
 
         #Objectives
         phi = (
-            m['betax_max'] / self.ref['betax_max'],
+            m['betx_max'] / self.ref['betx_max'],
             m['bety_max'] / self.ref['bety_max'],
             m['dx_max'] / self.ref['dx_max'],
             m['dx_start_zero'] / self.ref['dx_start_zero'],
@@ -49,8 +49,8 @@ class LatticeOptimisationProblem(ElementwiseProblem):
 
         #Constraints
         c = {
-                'qx': max(0.0, third_int(m['qx']) / self.tol_qx - 1.0),
-                'qy': max(0.0, third_int(m['qy']) / self.tol_qy - 1.0)
+                'qx': self.tol_qx - third_int(m['qx']),
+                'qy': self.tol_qy - third_int(m['qy'])
             }
         out["G"] = [c['qx'], c['qy']]
 
@@ -58,10 +58,9 @@ class LatticeOptimisationProblem(ElementwiseProblem):
 if __name__ == '__main__':
     quad_names = ['qf1', 'qd1', 'qf2', 'qd2']
     
-    k_init = np.array([ring[name].k1 for name in quad_names])
     lo = np.array([ 0.1, -2.0,  0.1, -2.0])
     hi = np.array([ 2.0, -0.1,  2.0, -0.1])
-    ref=dict(betax_max=30.0, bety_max=12.0, dx_max=13.0, dx_start_zero=1e-3, qx=1.672, qy=1.72)
+    ref=dict(betx_max=30.0, bety_max=12.0, dx_max=13.0, dx_start_zero=1e-3, qx=1.672, qy=1.72)
 
 #Same as in SAA
     def set_vars(x):
@@ -72,14 +71,15 @@ if __name__ == '__main__':
         tw = ring.twiss(method='4d')
         return dict(
             stable=True,
-            betax_max=float(np.max(tw.betx)),
+            betx_max=float(np.max(tw.betx)),
             bety_max=float(np.max(tw.bety)),
             dx_max=float(np.max(np.abs(tw.dx))),
             dx_start_zero=float(np.abs(tw.dx[0])),
             qx=float(tw.qx),
             qy=float(tw.qy),
         )
-    problem = LatticeOptimisationProblem(set_vars, get_metrics, lo, hi, ref, tol_qx=1e-3, tol_qy=1e-3)
+    
+    problem = LatticeOptimisationProblem(set_vars, get_metrics, lo, hi, ref, tol_qx=0.01, tol_qy=0.01)
 
     algorithm = NSGA2(pop_size=40)
     termination = get_termination("n_eval", 800)
@@ -93,3 +93,7 @@ if __name__ == '__main__':
     print(res.X)
     print(res.F)
 
+    plot = Scatter()
+    plot.add(res.F, edgecolor="red", facecolor="none")
+    plot.add(problem.pareto_front(), plot_type="line", alpha=0.7)
+    plot.show()
