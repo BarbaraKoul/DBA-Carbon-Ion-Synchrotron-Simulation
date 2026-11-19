@@ -227,3 +227,10 @@ if __name__ == '__main__':
 
     plt.tight_layout()
     plt.show()
+
+    np.savez(
+        "sa_results.npz",
+        best_overall_x=best_overall_x,
+        best_overall_J=best_overall_J,
+        sa_objectives=np.array(best_overall_parts['objectives']),
+    )
