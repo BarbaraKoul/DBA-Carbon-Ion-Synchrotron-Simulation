@@ -71,6 +71,97 @@ A pseudocode for this algorithm is the following:</br>
 11:   x ← x1
 12: T = T − δ
 ```
+>[!NOTE]
+> The pseudocode comes from the PhD Thesis of Xuanhao Zhang [Towards Automating the Design and Optimisation of Particle Accelerators](https://hdl.handle.net/11343/339350) and which the paper our project is based comes from.
+
+### Temperature vs Iterations Plot
+<img width="1000" height="600" alt="Temp_vs_iterations" src="https://github.com/user-attachments/assets/7535d04f-67ca-4ca7-86ad-581b0e63cfd8" />
+This plot confirms the exponential decrease of the temperature values over iterations:
+
+- Start value T0 = 0.3
+- End value T_end = 0.02
+
+### Cost Function vs Iterations for all seeds 0-3
+<img width="1000" height="600" alt="Cost_vs_iterations" src="https://github.com/user-attachments/assets/48d44381-563e-47cd-a956-1fe8ab35da54" />
+In this plot:
+
+- All 4 seeds start with J = 10<sup>6</sup>, in other words in non-stable conditions.
+- While the temperature is relatively high (Iterations 100-400 according to the previous diagram), the plots have high slope, which means that the algorithm tries to explore stable solutions by changing significantly the cost function value.
+- While T->0, slope->0, which means that the solutions found are stable.
+
+### Acceptance Rate and &sigma; Step Size vs Iterations
+<img width="600" height="600" alt="Acc_rate_sigma_vs_iterations" src="https://github.com/user-attachments/assets/a9927867-5a5e-4b10-ad63-9199a16dd299" />
+Here:
+
+- Comparing these 2 plots we observe that when the solutions are unstable, the algorithm increases the &sigma; rate until reaching &sigma;_max.
+- The acceptance rate is significantly decreased, with values less than 0.2.
+- The &sigma; rate is minimized already in the early itearations.
+
+All the above help us conclude that the algorithm needs improvement by changing temperature rate, adaptation rate or the lower bound of &sigma;_min.
+We have to mention that 
+
+## NSGA-II Algorithm
+The Non-dominated Sorting Genetic Algorithm II is an algorithm used for multi-objective optimization, in other words the simultaneous optimization of 2 or more conflicting objectives. The solutions form a **Pareto-Front**, where no single solution can be considered better than another without improving at least one objective at the expense of another.
+
+[A Genetic Algorithm (GA)](https://www.geeksforgeeks.org/dsa/genetic-algorithms/) is a population-based evolutionary optimization technique inspired by the principles of natural selection and genetics. It works by iteratively evolving a population of candidate solutions using biologically motivated operators such as selection, crossover and mutation to find optimal or near-optimal solutions to complex problems where traditional optimization techniques are ineffective.
+
+The pseudocode for NSGA-II is the following:
+```
+1:  for each p ∈ P do
+2:    Sp = ∅
+3:    np = 0
+4:    for each q ∈ P do
+5:      if p ≺ q then
+6:        Sp = Sp∪{q}
+7:      else if q ≺ p then
+8:         np = np + 1
+9:    if np = 0 then
+10:     p<sub>rank</sub> = 1
+11:     F1 =F1∪{p}
+12: i = 1
+13: while Fi ̸ = ∅ do
+14:   Q=∅ 
+15:   for each p ∈ Fi do
+16:     for each q ∈ Sp do
+17:       nq = nq − 1
+18:       if nq = 0 then
+19:         q<sub>rank</sub> = i + 1
+20:         Q=Q∪{q}
+21:   i = i + 1
+22:   Fi = Q
+```
+>[!NOTE]
+> The pseudocode comes from the PhD Thesis of Xuanhao Zhang [Towards Automating the Design and Optimisation of Particle Accelerators](https://hdl.handle.net/11343/339350) and which the paper our project is based comes from.
+
+In our project we used the [pymoo framework](https://ieeexplore.ieee.org/document/9078759) for NSGA-II optimisation.
+
+### Hypervolume vs Iterations plot
+<img width="800" height="450" alt="Hypervolume" src="https://github.com/user-attachments/assets/7f9e2279-a856-4f21-b1ae-7de458df5eea" />
+We conclude that:
+
+- The optimized solution is reached at ~1100 evaluations. However, in the last evaluations, the hypervolume value drops, which means that the crowding distance explores a solution in a not-so-crowded area of the 4D space, seeing that our pop-size is small (pop_size=40).
+- The SA was faster and reached better cost (J=1.1 in seed0), because NSGA-II needs more evaluations to find stable solutions. With more evaluations, NSGA-II reaches the SA optimized solution.
+
+### Trade-offs of &beta;<sub>x, max</sub> - &beta;<sub>y, max</sub> and &Delta;<sub>x, 0</sub> - &Delta;<sub>x, max</sub>
+<img width="1200" height="500" alt="Trade_offs" src="https://github.com/user-attachments/assets/31a1deed-526e-4cc5-8b3e-c2925d494cd7" />
+
+- We observe the L-shaped Pareto-Front, especially in the left plot. The red star is the solution SA found. Hence, NSGA-II found better solutions, although SA was close to the best solution, even though is single-objective.
+- Also, NSGA-II was not trapped in local minima, while SA is affected by the first seed.
+- SA is immediately affected by the weights of the Encoder, while NSGA-II explores the trade-offs without weights and terminates with more optimized solutions.
+
+
+### Parallel Coordinates of Pareto-Optimal Solutions
+<img width="800" height="600" alt="Parallel_Pareto" src="https://github.com/user-attachments/assets/ccb27673-e15d-415c-bafd-11173e1acd1f" />
+
+- Here, we see the 4 objectives and their performance. The X-shape means that we have significant trade-off, while the parallel lines mean that the objectives are optimized at the same time.
+- The red line is the best solution for all objectives.
+
+### Simulated Annealing vs NSGA-II plot
+<img width="850" height="500" alt="SA_Vs_NSGA-II" src="https://github.com/user-attachments/assets/c0076797-564a-48a0-8094-a6bc93d58366" />
+
+- We compare the 2 algorithms (SA vs NSGA-II). We take the population of each generation of NSGA-II and we calculate the cost J would take if it was revied with the SA algorithm.
+
+
 ## RF Cavities
 In order to avoid interfering with the 4D Twiss methods, two new files were created for the RF Cavity simulation (or 6D Twiss method). ``lattice_design_RF.py`` and ``configRF.py``. </br>
 In ``configRF.py``: </br>
