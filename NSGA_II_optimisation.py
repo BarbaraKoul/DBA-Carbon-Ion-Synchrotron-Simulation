@@ -129,6 +129,7 @@ if __name__ == '__main__':
         else:
             hv_vals.append(0.0)
 
+    #plot of hypervolume over evaluations
     plt.figure(figsize=(8, 4.5))
     plt.plot(n_evals, hv_vals, marker='o', color='tab:purple', linewidth=2)
     plt.xlabel("Evaluations")
@@ -163,9 +164,11 @@ if __name__ == '__main__':
     ax2.legend()
     ax2.grid(True, linestyle='--', alpha=0.6)
 
+    #plotting the Pareto front and the SA best solution
     plt.tight_layout()
     plt.show()
 
+    #plotting the Pareto front in parallel coordinates
     if len(F_pareto) > 0:
         pcp = PCP(
             labels=[r"$\beta_{x,\max}$", r"$\beta_{y,\max}$", r"$D_{x,\max}$", r"$D_{x,0}$"],
@@ -180,6 +183,7 @@ if __name__ == '__main__':
         pcp.fig.subplots_adjust(top=0.82)
         pcp.show()
 
+    #plotting the best-so-far equivalent cost J over evaluations for NSGA-II and SA
     plt.figure(figsize=(8.5, 5))
     plt.plot(n_evals, best_J_nsga, marker='s', markersize=4, linewidth=2, color='black', label='NSGA-II (Seed 0, best J in pop)')
 
